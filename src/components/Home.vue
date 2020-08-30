@@ -122,20 +122,19 @@ export default {
       }
     }
   }
-  .el-aside {
+  /deep/ .el-aside {
     background: rgb(48, 65, 86);
     color: rgb(191, 203, 217);
-    /deep/ .el-menu {
+    .el-menu {
       border-right: none;
-      .el-submenu {
-        .el-submenu__title:hover {
-          background: #263445 !important;
-        }
-        .el-menu--inline {
-          .el-menu-item:hover {
-            background: #263445 !important;
-          }
-        }
+      .el-submenu__title:hover {
+        background: #263445 !important;
+      }
+      .el-menu-item:hover {
+        background: #263445 !important;
+      }
+      .el-menu-item.is-active {
+        background: transparent !important;
       }
     }
   }
