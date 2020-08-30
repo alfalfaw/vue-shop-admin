@@ -143,7 +143,9 @@ export default {
           background: #263445 !important;
         }
       }
-
+      .el-menu-item:hover {
+        background: #263445 !important;
+      }
       .el-menu-item.is-active {
         background: transparent !important;
       }
