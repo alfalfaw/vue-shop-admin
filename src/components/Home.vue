@@ -107,6 +107,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.el-menu--vertical > ul > li:hover {
+  background-color: #263445 !important;
+}
 .home {
   min-height: 100vh;
   .el-header {
@@ -122,17 +125,25 @@ export default {
       }
     }
   }
+
   /deep/ .el-aside {
     background: rgb(48, 65, 86);
     color: rgb(191, 203, 217);
+
     .el-menu {
       border-right: none;
-      .el-submenu__title:hover {
-        background: #263445 !important;
+
+      &.el-menu--collapse {
+        .el-submenu__title {
+          text-align: center;
+        }
       }
-      .el-menu-item:hover {
-        background: #263445 !important;
+      .el-submenu__title {
+        &:hover {
+          background: #263445 !important;
+        }
       }
+
       .el-menu-item.is-active {
         background: transparent !important;
       }
