@@ -11,7 +11,7 @@
             <el-input type="password" v-model="loginForm.password" prefix-icon="el-icon-key"></el-input>
           </el-form-item>
 
-          <el-form-item class="text-right ">
+          <el-form-item class="text-right">
             <el-button type="primary" @click="login">登录</el-button>
             <el-button type="info" @click="resetLoginForm">重置</el-button>
           </el-form-item>
@@ -78,6 +78,7 @@ export default {
     background: #2b4b6b;
     min-height: 100vh;
     position: relative;
+    overflow: hidden;
     .login-box {
       height: 300px;
       width: 400px;
