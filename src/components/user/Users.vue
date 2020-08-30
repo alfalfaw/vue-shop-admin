@@ -12,7 +12,7 @@
         </el-col>
       </el-row>
 
-      <el-table class="mt-5" :data="userList" border style="width: 100%">
+      <el-table @selection-change="handleSelectionChange" class="mt-5" :data="userList" border style="width: 100%">
         <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column type="index" label="#"> </el-table-column>
         <el-table-column prop="username" label="姓名" width="90"> </el-table-column>
@@ -32,7 +32,7 @@
               <el-button @click="showEditDialog(row.id)" size="mini" type="primary" icon="el-icon-edit"></el-button>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="删除" placement="top" :enterable="false">
-              <el-button @click="removeUserById(row.id)" size="mini" type="danger" icon="el-icon-delete"></el-button>
+              <el-button @click="removeUserById(row)" size="mini" type="danger" icon="el-icon-delete"></el-button>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="分配权限" placement="top" :enterable="false">
               <el-button size="mini" type="warning" icon="el-icon-setting"></el-button>
@@ -41,17 +41,20 @@
         </el-table-column>
       </el-table>
 
-      <el-pagination
-        class="mt-4 text-right"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="queryInfo.pagenum"
-        :page-sizes="[1, 2, 5, 10]"
-        :page-size="queryInfo.pagesize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-      >
-      </el-pagination>
+      <div class="d-flex ai-center mt-4 jc-between">
+        <el-button type="danger" size="small" @click="removeUsers">删除选中</el-button>
+        <el-pagination
+          class="text-right d-flex ai-center"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="queryInfo.pagenum"
+          :page-sizes="[1, 2, 5, 10]"
+          :page-size="queryInfo.pagesize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        >
+        </el-pagination>
+      </div>
     </el-card>
     <!-- 添加用户对话框 -->
     <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
@@ -177,7 +180,9 @@ export default {
             trigger: 'blur'
           }
         ]
-      }
+      },
+      // 选中的数据
+      multipleSelection: []
     }
   },
   methods: {
@@ -300,11 +305,12 @@ export default {
       })
     },
     // 根据id删除用户
-    async removeUserById(id) {
-      const confirmResult = await this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+    async removeUserById(row) {
+      const confirmResult = await this.$confirm(`此操作将永久删除用户 <strong>${row.username}</strong> , 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
+        dangerouslyUseHTMLString: true
       }).catch(err => err)
       // console.log(confirmResult)
       if (confirmResult === 'cancel') {
@@ -314,7 +320,7 @@ export default {
         })
       }
 
-      const { data: res } = await this.$http.delete(`users/${id}`)
+      const { data: res } = await this.$http.delete(`users/${row.id}`)
       if (res.meta.status !== 200) {
         return this.$message({
           type: 'error',
@@ -324,6 +330,40 @@ export default {
       this.$message({
         type: 'success',
         message: '删除用户成功'
+      })
+      this.getUserList()
+    },
+    // 多选
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
+    // 删除多个
+    async removeUsers() {
+      let nameStr = this.multipleSelection.map(user => user.username).join('、')
+      const confirmResult = await this.$confirm(`此操作将永久删除用户 <strong>${nameStr}</strong>，是否继续?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        dangerouslyUseHTMLString: true
+      }).catch(err => err)
+      if (confirmResult === 'cancel') {
+        return this.$message({
+          type: 'info',
+          message: '取消删除'
+        })
+      }
+      const deleted = []
+
+      for (let i = 0; i < this.multipleSelection.length; i++) {
+        await this.$http.delete(`users/${this.multipleSelection[i].id}`)
+        deleted.push(this.multipleSelection[i].username)
+      }
+
+      nameStr = deleted.join('、')
+      this.$alert(`<strong>${nameStr}</strong> 已删除`, '提示', {
+        confirmButtonText: '确定',
+        dangerouslyUseHTMLString: true,
+        callback: action => action
       })
       this.getUserList()
     }
