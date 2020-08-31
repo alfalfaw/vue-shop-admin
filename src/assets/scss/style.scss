@@ -173,6 +173,13 @@ input {
     }
   }
 }
+// 补充边距
+.ml-auto {
+  margin-left: auto;
+}
+.mr-auto {
+  margin-right: auto;
+}
 
 // 边框(eg: bt-1)
 @each $dirKey, $dir in $directions {
