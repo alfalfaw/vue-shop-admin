@@ -206,7 +206,7 @@ export default {
     },
     // 根据 id 删除角色
     async removeRoleById(row) {
-      console.log(row)
+      // console.log(row)
       const confirmResult = await this.$confirm(`此操作将永久删除角色 <strong>${row.roleName}</strong> , 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

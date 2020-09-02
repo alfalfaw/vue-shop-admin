@@ -99,10 +99,13 @@ input {
 .h-100 {
   height: 100%;
 }
-// flex
-.d-flex {
-  display: flex;
+// display
+@each $var in (none, inline, inline-block, block, table, table-cell, teble-row, flex, inline-flex) {
+  .d-#{$var} {
+    display: $var;
+  }
 }
+
 .flex-column {
   flex-direction: column;
 }
