@@ -96,7 +96,7 @@
 <script>
 import TreeTable from 'vue-table-with-tree-grid'
 export default {
-  name: 'Cate',
+  name: 'Categories',
   components: {
     TreeTable
   },

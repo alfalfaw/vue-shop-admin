@@ -266,6 +266,8 @@ export default {
     // 查询
     search() {
       if (this.lastQuery !== this.queryInfo.query) {
+        this.queryInfo.pagenum = 1
+
         this.$router.push({ path: 'users', query: this.queryInfo })
         this.getUserList()
         this.lastQuery = this.queryInfo.query

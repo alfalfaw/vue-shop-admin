@@ -2,7 +2,7 @@
   <el-container class="home">
     <el-aside :width="isCollapse ? '64px' : '200px'">
       <el-menu
-        :default-active="$route.path"
+        :default-active="$route.path === '/goods/add' ? '/goods' : $route.path"
         background-color="rgb(48, 65, 86)"
         text-color="rgb(191, 203, 217)"
         active-text-color="rgb(64, 158, 255)"
@@ -71,6 +71,9 @@ export default {
       for (let i = 0; i < this.menulist.length; i++) {
         const j = this.menulist[i].children.findIndex(item => item.path === path)
         if (j > -1) return [this.menulist[i].authName, this.menulist[i].children[j].authName]
+      }
+      if (path === 'goods/add') {
+        return ['商品列表', '添加商品']
       }
       return []
     }
