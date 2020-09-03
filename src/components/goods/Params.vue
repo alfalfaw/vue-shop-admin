@@ -326,7 +326,7 @@ export default {
         this.editDialogVisible = false
       })
     },
-    // 删除属性/参数
+    // 删除 属性/参数
     async removeParams(row) {
       const confirmResult = await this.$confirm(`此操作将永久删除${this.titleText} <strong>${row.attr_name}</strong> , 是否继续?`, '提示', {
         confirmButtonText: '确定',
@@ -355,7 +355,7 @@ export default {
       })
       this.getParamsData()
     },
-    // 文本框失去焦点或者按下 Enter
+    // 增加 参数/属性 的可选项
     async handleInputConfirm(row) {
       if (row.inputValue.trim().length !== 0) {
         // 输入信息合法，进行后续处理
@@ -365,6 +365,7 @@ export default {
       row.inputValue = ''
       row.inputVisible = false
     },
+    // 保存 参数/属性 的可选项
     async saveAttrVals(row) {
       const { data: res } = await this.$http.put(`categories/${this.catId}/attributes/${row.attr_id}`, {
         attr_name: row.attr_name,
@@ -390,7 +391,7 @@ export default {
         this.$refs.saveTagInput.$refs.input.focus()
       })
     },
-    // 删除属性/参数
+    // 删除 参数/属性 的可选项
     handleTagClosed(i, row) {
       row.attr_vals.splice(i, 1)
       this.saveAttrVals(row)
