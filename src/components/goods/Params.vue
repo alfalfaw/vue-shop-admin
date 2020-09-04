@@ -310,7 +310,8 @@ export default {
 
         const { data: res } = await this.$http.put(`categories/${this.catId}/attributes/${this.editForm.attr_id}`, {
           attr_name: this.editForm.attr_name,
-          attr_sel: this.activeName
+          attr_sel: this.activeName,
+          attr_vals: this.editForm.attr_vals
         })
         if (res.meta.status !== 200) {
           return this.$message({
