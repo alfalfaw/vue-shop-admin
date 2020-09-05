@@ -24,7 +24,7 @@
           <template #default="{row}">
             <!-- enterable="false" 鼠标放到提示框时提示框仍会消失 -->
             <el-tooltip class="item" effect="dark" content="编辑" placement="top" :enterable="false">
-              <el-button size="mini" type="primary" icon="el-icon-edit"></el-button>
+              <el-button @click="goEditPage(row)" size="mini" type="primary" icon="el-icon-edit"></el-button>
             </el-tooltip>
             <el-tooltip class="item" effect="dark" content="删除" placement="top" :enterable="false">
               <el-button @click="removeGoodById(row)" size="mini" type="danger" icon="el-icon-delete"></el-button>
@@ -82,7 +82,7 @@ export default {
         })
       }
 
-      console.log(res.data)
+      // console.log(res.data)
       this.goodslist = res.data.goods
       this.total = res.data.total
     },
@@ -140,6 +140,10 @@ export default {
 
     goAddPage() {
       this.$router.push('/goods/add')
+    },
+    goEditPage(row) {
+      console.log(row)
+      this.$router.push(`goods/edit/${row.goods_id}`)
     }
   }
 }
