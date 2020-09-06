@@ -2,14 +2,22 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-
 import '@/assets/scss/style.scss'
 import './plugins/element.js'
 import axios from 'axios'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1/'
 
+// 富文本
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+import VueQuillEditor from 'vue-quill-editor'
+
+// 导入表格树
+import TreeTable from 'vue-table-with-tree-grid'
+
+axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1/'
 axios.interceptors.request.use(config => {
   NProgress.start()
   config.headers.Authorization = window.sessionStorage.getItem('token')
@@ -22,6 +30,10 @@ axios.interceptors.response.use(config => {
 Vue.prototype.$http = axios
 
 Vue.config.productionTip = false
+Vue.use(VueQuillEditor)
+
+// 全局注册表格树
+Vue.component('tree-table', TreeTable)
 
 Vue.filter('dateFormat', function(originVal) {
   const dt = new Date(originVal)

@@ -1,18 +1,19 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Login from '@/components/Login'
-import Home from '@/components/Home'
-import Dashboard from '@/components/Dashboard'
-import Users from '@/components/user/Users'
-import Rights from '@/components/power/Rights'
-import Roles from '@/components/power/Roles'
-import Cate from '@/components/goods/Cate'
-import Params from '@/components/goods/Params'
-import GoodsList from '@/components/goods/List'
-import Add from '@/components/goods/Add'
-import Edit from '@/components/goods/Edit'
-import Order from '@/components/order/Order'
-import Report from '@/components/report/Report'
+// import Login from '@/components/Login'
+// import Home from '@/components/Home'
+// import Dashboard from '@/components/Dashboard'
+// import Users from '@/components/user/Users'
+// import Rights from '@/components/power/Rights'
+// import Roles from '@/components/power/Roles'
+// import Cate from '@/components/goods/Cate'
+// import Params from '@/components/goods/Params'
+// import GoodsList from '@/components/goods/List'
+// import Add from '@/components/goods/Add'
+// import Edit from '@/components/goods/Edit'
+// import Order from '@/components/order/Order'
+// import Report from '@/components/report/Report'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -23,69 +24,70 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: Login
+    component: () => import(/* webpackChunkName: 'Login-Home-Dashboard' */ '@/components/Login')
   },
   {
     path: '/home',
     name: 'Home',
-    component: Home,
+    component: () => import(/* webpackChunkName: 'Login-Home-Dashboard' */ '@/components/Home'),
     redirect: '/dashboard',
     children: [
       {
         path: '/dashboard',
         name: 'Dashboard',
-        component: Dashboard
+        component: () => import(/* webpackChunkName: 'Login-Home-Dashboard' */ '@/components/Dashboard')
       },
       {
         path: '/users',
         name: 'Users',
-        component: Users
+        component: () => import(/* webpackChunkName: 'Users-Rights-Roles' */ '@/components/user/Users')
       },
       {
         path: '/rights',
         name: 'Rights',
-        component: Rights
+        component: () => import(/* webpackChunkName: 'Users-Rights-Roles' */ '@/components/power/Rights')
       },
       {
         path: '/roles',
         name: 'Roles',
-        component: Roles
+        component: () => import(/* webpackChunkName: 'Users-Rights-Roles' */ '@/components/power/Roles')
       },
+
       {
         path: '/categories',
         name: 'Categories',
-        component: Cate
+        component: () => import(/* webpackChunkName: 'Categories-Params-Goods-Add-Edit' */ '@/components/goods/Cate')
       },
       {
         path: '/params',
         name: 'Params',
-        component: Params
+        component: () => import(/* webpackChunkName: 'Categories-Params-Goods-Add-Edit' */ '@/components/goods/Params')
       },
       {
         path: '/goods',
         name: 'Goods',
-        component: GoodsList
+        component: () => import(/* webpackChunkName: 'Categories-Params-Goods-Add-Edit' */ '@/components/goods/List')
       },
       {
         path: '/goods/add',
         name: 'Add',
-        component: Add
+        component: () => import(/* webpackChunkName: 'Categories-Params-Goods-Add-Edit' */ '@/components/goods/Add')
       },
       {
         path: '/goods/edit/:id',
         name: 'Edit',
         props: true,
-        component: Edit
+        component: () => import(/* webpackChunkName: 'Categories-Params-Goods-Add-Edit' */ '@/components/goods/Edit')
       },
       {
         path: '/orders',
         name: 'Order',
-        component: Order
+        component: () => import(/* webpackChunkName: 'Order-Report' */ '@/components/order/Order')
       },
       {
         path: '/reports',
         name: 'Report',
-        component: Report
+        component: () => import(/* webpackChunkName: 'Order-Report' */ '@/components/report/Report')
       }
     ]
   }

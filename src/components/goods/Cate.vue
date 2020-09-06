@@ -94,12 +94,8 @@
 </template>
 
 <script>
-import TreeTable from 'vue-table-with-tree-grid'
 export default {
   name: 'Categories',
-  components: {
-    TreeTable
-  },
   data() {
     return {
       catelist: [],
