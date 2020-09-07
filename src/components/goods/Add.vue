@@ -104,16 +104,16 @@ export default {
     return {
       activeIndex: '0',
       addForm: {
-        goods_name: '电脑',
+        goods_name: '',
         goods_price: 0,
         goods_weight: 0,
         goods_number: 0,
         // 商品分类数组
-        goods_cat: [2000, 2001, 2002],
+        goods_cat: [],
         pics: [],
         // 商品详情
         goods_introduce: '',
-        // 属性/参数
+        // 属性 / 参数
         attrs: []
       },
       addFormRules: {
@@ -143,10 +143,6 @@ export default {
       previewPath: '',
       // 控制图片预览对话框显示与隐藏
       previewDialogVisible: false,
-      // 第一次进入参数面板时获取数据
-      firstEnterParamsPane: true,
-      // 第一次进入属性面板时获取数据
-      firstEnterAttrsPane: true,
       // 是否添加成功
       addSuccess: false,
       // 倒计时
@@ -176,17 +172,63 @@ export default {
         })
       }
       this.catelist = res.data
-      // console.log(this.catelist)
+      console.log(this.catelist)
+    },
+
+    // 根据分类获取动态参数列表
+    async getManyTableData() {
+      const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, {
+        params: {
+          sel: 'many'
+        }
+      })
+
+      if (res.meta.status !== 200) {
+        return this.$message({
+          type: 'error',
+          message: '获取参数列表失败'
+        })
+      }
+      res.data.forEach(item => {
+        item.attr_vals = item.attr_vals.length === 0 ? [] : item.attr_vals.split(' ')
+        item.attr_list = _.cloneDeep(item.attr_vals)
+      })
+      this.manyTableData = res.data
+    },
+    // 根据分类获取静态属性列表
+    async getOnlyTableData() {
+      const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, {
+        params: {
+          sel: 'only'
+        }
+      })
+
+      if (res.meta.status !== 200) {
+        return this.$message({
+          type: 'error',
+          message: '获取属性列表失败'
+        })
+      }
+      res.data.forEach(item => {
+        item.attr_vals = item.attr_vals.length === 0 ? [] : item.attr_vals.split(' ')
+        item.attr_list = _.cloneDeep(item.attr_vals)
+      })
+      this.onlyTableData = res.data
     },
     // 级联选择器选中项变化
     handleCateChange() {
-      // console.log(this.addForm.goods_cat)
       if (this.addForm.goods_cat.length !== 3) {
         this.addForm.goods_cat = []
+        return false
       }
+      // 如果选择了三级分类，发送请求更新动态参数和静态属性
+      this.getManyTableData()
+      this.getOnlyTableData()
     },
     // 监听切换tab
     beforeTabLeave(activeName, oldActiveName) {
+      console.log('打印选择分类')
+      console.log(this.addForm.goods_cat)
       if (oldActiveName === '0' && this.addForm.goods_cat.length !== 3) {
         this.$message({
           type: 'error',
@@ -200,49 +242,9 @@ export default {
       }
       if (oldActiveName === '6') return false
     },
+
     // 切换面板
-    async tabClicked() {
-      if (this.activeIndex === '1' && this.firstEnterParamsPane) {
-        this.firstEnterParamsPane = false
-        const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, {
-          params: {
-            sel: 'many'
-          }
-        })
-
-        if (res.meta.status !== 200) {
-          return this.$message({
-            type: 'error',
-            message: '获取参数列表失败'
-          })
-        }
-        res.data.forEach(item => {
-          item.attr_vals = item.attr_vals.length === 0 ? [] : item.attr_vals.split(' ')
-          item.attr_list = item.attr_vals
-        })
-        this.manyTableData = res.data
-      } else if (this.activeIndex === '2' && this.firstEnterAttrsPane) {
-        this.firstEnterAttrsPane = false
-        const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, {
-          params: {
-            sel: 'only'
-          }
-        })
-
-        if (res.meta.status !== 200) {
-          return this.$message({
-            type: 'error',
-            message: '获取属性列表失败'
-          })
-        }
-        res.data.forEach(item => {
-          item.attr_vals = item.attr_vals.length === 0 ? [] : item.attr_vals.split(' ')
-          item.attr_list = item.attr_vals
-        })
-        this.onlyTableData = res.data
-        // console.log(this.manyTableData)
-      }
-    },
+    async tabClicked() {},
     // 图片预览
     handlePreview(file) {
       if (!file) return
@@ -286,7 +288,6 @@ export default {
             message: '请填写必要的表单项'
           })
         }
-
         const form = _.cloneDeep(this.addForm)
         form.goods_cat = form.goods_cat.join(',')
         form.attrs = []

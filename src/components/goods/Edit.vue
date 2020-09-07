@@ -2,7 +2,6 @@
   <div class="add">
     <el-card>
       <!-- <el-alert title="添加商品" center type="info" :closable="false"> </el-alert> -->
-
       <el-steps class="mt-5" align-center :space="200" :active="activeIndex - 0" finish-status="success">
         <el-step title="基本信息"></el-step>
         <el-step title="商品参数"></el-step>
@@ -39,22 +38,18 @@
             </el-form-item>
           </el-tab-pane>
           <el-tab-pane name="1" label="商品参数">
-            <div v-for="item in editForm.attrs" :key="item.attr_id">
-              <el-form-item v-if="item.attr_sel === 'many'" :label="item.attr_name">
-                <el-checkbox-group v-model="item.attr_value">
-                  <el-checkbox size="mini" border :label="subItem" v-for="(subItem, i) in item.attr_vals" :key="i"></el-checkbox>
-                </el-checkbox-group>
-              </el-form-item>
-            </div>
+            <el-form-item :label="item.attr_name" v-for="item in manyTableData" :key="item.attr_id">
+              <el-checkbox-group v-model="item.attr_vals">
+                <el-checkbox size="mini" border :label="subItem" v-for="(subItem, i) in item.attr_list" :key="i"></el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
           </el-tab-pane>
           <el-tab-pane name="2" label="商品属性">
-            <div v-for="item in editForm.attrs" :key="item.attr_id">
-              <el-form-item v-if="item.attr_sel === 'only'" :label="item.attr_name">
-                <el-checkbox-group v-model="item.attr_value">
-                  <el-checkbox size="mini" border :label="subItem" v-for="(subItem, i) in item.attr_vals" :key="i"></el-checkbox>
-                </el-checkbox-group>
-              </el-form-item>
-            </div>
+            <el-form-item :label="item.attr_name" v-for="item in onlyTableData" :key="item.attr_id">
+              <el-checkbox-group v-model="item.attr_vals">
+                <el-checkbox size="mini" border :label="subItem" v-for="(subItem, i) in item.attr_list" :key="i"></el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
           </el-tab-pane>
           <el-tab-pane name="3" label="商品图片">
             <el-upload
@@ -63,9 +58,8 @@
               :before-upload="beforeUpload"
               :on-preview="handlePreview"
               :on-remove="handleRemove"
-              list-type="picture"
-              :file-list="fileList"
               :on-success="handleSuccess"
+              list-type="picture"
             >
               <el-button size="small" type="primary">点击上传</el-button>
               <div slot="tip" class="el-upload__tip">只能上传jpg/png/bmp/gif文件，且不超过2M</div>
@@ -114,7 +108,9 @@ export default {
   data() {
     return {
       activeIndex: '0',
-      editForm: {},
+      editForm: {
+        goods_cat: []
+      },
       editFormRules: {
         goods_name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
         goods_price: [{ required: true, message: '请输入商品价格', trigger: 'blur' }],
@@ -144,8 +140,10 @@ export default {
       editSuccess: false,
       // 倒计时
       countdown: 3,
-      // 上传文件列表
-      fileList: []
+      // 已经上传文件列表，暂不支持
+      // fileList: [],
+      manyTableData: [],
+      onlyTableData: []
     }
   },
   created() {
@@ -160,6 +158,26 @@ export default {
       return null
     }
   },
+  // 监听切换tab
+  beforeTabLeave(activeName, oldActiveName) {
+    if (oldActiveName === '0' && this.addForm.goods_cat.length !== 3) {
+      this.$message({
+        type: 'error',
+        message: '请先选择商品分类'
+      })
+      return false
+    }
+    // 如果用户没有提交，不能跳转到完成修改
+    if (activeName === '6' && !this.editSuccess) {
+      return false
+    }
+    if (oldActiveName === '6') return false
+  },
+  // 切换面板
+
+  async tabClicked() {
+    console.log('切换面板')
+  },
 
   methods: {
     // 获取所有分类数据
@@ -173,6 +191,66 @@ export default {
       }
       this.catelist = res.data
     },
+
+    // 根据分类获取动态参数列表
+    async getManyTableData(selected) {
+      const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, {
+        params: {
+          sel: 'many'
+        }
+      })
+
+      if (res.meta.status !== 200) {
+        return this.$message({
+          type: 'error',
+          message: '获取参数列表失败'
+        })
+      }
+
+      // 循环每个参数
+      res.data.forEach(item => {
+        item.attr_list = item.attr_vals.length === 0 ? [] : item.attr_vals.split(' ')
+        const index = selected.findIndex(selectedItem => selectedItem.attr_id === item.attr_id)
+        if (index > -1) {
+          item.attr_vals = selected[index].attr_value.length === 0 ? [] : selected[index].attr_value.split(' ')
+        } else {
+          item.attr_vals = []
+        }
+      })
+      this.manyTableData = res.data
+      console.log('打印manyTableData')
+      console.log(this.manyTableData)
+    },
+    // 根据分类获取静态属性列表
+    async getOnlyTableData(selected) {
+      const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, {
+        params: {
+          sel: 'only'
+        }
+      })
+
+      if (res.meta.status !== 200) {
+        return this.$message({
+          type: 'error',
+          message: '获取属性列表失败'
+        })
+      }
+
+      // 循环每个属性
+      res.data.forEach(item => {
+        item.attr_list = item.attr_vals.length === 0 ? [] : item.attr_vals.split(' ')
+        const index = selected.findIndex(selectedItem => selectedItem.attr_id === item.attr_id)
+        if (index > -1) {
+          item.attr_vals = selected[index].attr_value.length === 0 ? [] : selected[index].attr_value.split(' ')
+        } else {
+          item.attr_vals = []
+        }
+      })
+      this.onlyTableData = res.data
+      console.log('打印onlyTableData')
+      console.log(this.onlyTableData)
+    },
+
     // 级联选择器选中项变化
     handleCateChange() {
       // console.log(this.editForm.goods_cat)
@@ -199,22 +277,17 @@ export default {
     async tabClicked() {},
     // 图片预览
     handlePreview(file) {
-      if (file.response) {
-        this.previewPath = file.response.data.url
-        this.previewDialogVisible = true
-      } else {
-        this.previewPath = file.url
-        this.previewDialogVisible = true
-      }
+      if (!file) return
+      this.previewPath = file.response.data.url
+      this.previewDialogVisible = true
     },
     // 移除图片
     handleRemove(file) {
-      console.log(file)
       // 如果file中有 response 属性，说明删除上传成功的图片，否则什么也不做
       if (file.response) {
         const filePath = file.response.data.tmp_path
-        const i = this.editForm.pics.findIndex(x => x.pic === filePath)
-        this.editForm.pics.splice(i, 1)
+        const i = this.addForm.pics.findIndex(x => x.pic === filePath)
+        this.addForm.pics.splice(i, 1)
       }
     },
     // 控制上传图片大小和格式
@@ -232,7 +305,7 @@ export default {
     },
     // 图片上传成功
     handleSuccess(res) {
-      this.editForm.pics.push({
+      this.addForm.pics.push({
         pic: res.data.tmp_path
       })
     },
@@ -246,23 +319,24 @@ export default {
           })
         }
 
-        const form = {
-          goods_name: this.editForm.goods_name,
-          goods_price: this.editForm.goods_price,
-          goods_number: this.editForm.goods_number,
-          goods_weight: this.editForm.goods_weight,
-          goods_cat: this.editForm.goods_cat.join(','),
-          goods_introduce: this.editForm.goods_introduce,
-          pics: _.cloneDeep(this.editForm.pics),
-
-          attrs: this.editForm.attrs.map(attr => {
-            return {
-              attr_id: attr.attr_id,
-              attr_value: attr.attr_value.join(' ')
-            }
+        const form = _.cloneDeep(this.editForm)
+        form.goods_cat = form.goods_cat.join(',')
+        form.attrs = []
+        // 如果没有打开过商品参数/商品属性面板，这两个数组均为空
+        this.manyTableData.forEach(item => {
+          form.attrs.push({
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals.join(' ')
           })
-        }
-        console.log(form)
+        })
+        this.onlyTableData.forEach(item => {
+          form.attrs.push({
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals.join(' ')
+          })
+        })
+
+        // console.log(form)
         const { data: res } = await this.$http.put(`goods/${this.id}`, form)
         if (res.meta.status !== 200) {
           return this.$message({
@@ -295,16 +369,15 @@ export default {
           message: '获取商品详情失败'
         })
       }
-      // console.log('未修改')
-      // console.log(res.data)
 
-      this.editForm = _.cloneDeep(res.data)
-      this.editForm.goods_cat = this.editForm.goods_cat.split(',').map(item => parseInt(item))
+      res.data.goods_cat = res.data.goods_cat.split(',').map(item => parseInt(item))
 
-      this.editForm.attrs.forEach(attr => {
-        attr.attr_vals = attr.attr_vals.length > 0 ? attr.attr_vals.split(' ') : []
-        attr.attr_value = attr.attr_value.length > 0 ? attr.attr_value.split(' ') : []
-      })
+      this.editForm = res.data
+      this.fileList = []
+      this.editForm.pics = []
+
+      this.getManyTableData(res.data.attrs.filter(attr => attr.attr_sel === 'many'))
+      this.getOnlyTableData(res.data.attrs.filter(attr => attr.attr_sel === 'only'))
 
       // this.fileList = this.editForm.pics.map(pic => {
       //   return {
@@ -313,11 +386,8 @@ export default {
       //   }
       // })
 
-      this.fileList = []
-      this.editForm.pics = []
-
-      // console.log('打印表单')
-      // console.log(this.editForm)
+      console.log('打印表单')
+      console.log(this.editForm)
     }
   }
 }
