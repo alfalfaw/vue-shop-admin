@@ -37,7 +37,9 @@ input {
 .float-right {
   float: right;
 }
-
+.float-none {
+  float: none;
+}
 // 清除浮动
 .clearfix::before,
 .clearfix::after {
@@ -49,7 +51,7 @@ input {
   clear: both;
 }
 
-// 文本(eg: text-white-1)、背景颜色(eg: bg-white-1)
+// 文本(eg: text-white)、背景颜色(eg: bg-white)、边框(eg: border-primary)
 @each $colorKey, $color in $colors {
   .text-#{$colorKey} {
     color: $color;
@@ -57,48 +59,165 @@ input {
   .bg-#{$colorKey} {
     background-color: $color;
   }
+  .border-#{$colorKey} {
+    border: 1px solid $color;
+  }
 }
-// 文本对齐方式(eg: text-right)
-@each $var in (left, center, right) {
+
+// 文本水平对齐方式(eg: text-right)
+@each $var in (left, center, right, justify) {
   .text-#{$var} {
     text-align: $var !important;
   }
 }
+// 文本垂直对齐方式
+@each $var in (baseline, top, middle, bottom, text-top, text-bottom) {
+  .align-#{$var} {
+    vertical-align: $var;
+  }
+}
+// 文本换行
+.text-wrap {
+  white-space: normal !important;
+}
+// 文本不换行
+.text-nowrap {
+  white-space: nowrap !important;
+}
+// screen reader
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+  clip: auto !important;
+  -webkit-clip-path: none !important;
+  clip-path: none !important;
+  height: auto !important;
+  margin: auto !important;
+  overflow: visible !important;
+  width: auto !important;
+  white-space: normal !important;
+}
+
 // 字体大小(eg: fs-md)
 @each $sizeKey, $size in $font-sizes {
   .fs-#{$sizeKey} {
     font-size: $size * $base-font-size;
   }
 }
-// 垂直对齐方式
-@each $var in (baseline, top, middle, bottom, text-top, text-bottom) {
-  .align-#{$var} {
-    vertical-align: $var;
-  }
-}
-
 // 字体粗细
 @each $weightKey, $weight in $font-weights {
   .fw-#{$weightKey} {
     font-weight: $weight;
   }
 }
+// 字体风格
+.font-italic {
+  font-style: italic !important;
+}
 // 文本溢出显示省略号
 .text-ellipsis {
-  display: inline-block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  word-break: break-all;
+}
+// 隐藏文本
+.text-hide {
+  font: 0/0;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+// 去除文本装饰
+.text-decoration-none {
+  text-decoration: none;
+}
+// 文本换行规则
+.text-break {
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+}
+// 文本转换
+.text-lowercase {
+  text-transform: lowercase !important;
+}
+.text-uppercase {
+  text-transform: uppercase !important;
+}
+.text-capitalize {
+  text-transform: capitalize !important;
+}
+// 文本是否可选择
+@each $var in (all, auto, none) {
+  .user-select-#{$var} {
+    user-select: $var;
+  }
+}
+// 是否可见
+.visible {
+  visibility: visible !important;
+}
+.invisible {
+  visibility: hidden !important;
+}
+// 阴影
+.shadow-none {
+  box-shadow: none;
+}
+.shadow-sm {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+.shadow {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+.shadow-lg {
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+}
+// 溢出
+.overflow-auto {
+  overflow: auto;
+}
+.overflow-hidden {
+  overflow: hidden;
+}
+// 宽、高
+@each $percentKey, $percent in $percents {
+  .w-#{$percentKey} {
+    width: $percent;
+  }
+  .h-#{$percentKey} {
+    height: $percent;
+  }
+}
+.mw-100 {
+  max-width: 100%;
+}
+.mh-100 {
+  max-height: 100%;
+}
+.min-vw-100 {
+  min-width: 100vw;
+}
+.min-vh-100 {
+  min-height: 100vh;
 }
 
-// 宽、高
-.w-100 {
-  width: 100%;
+.vw-100 {
+  width: 100vw;
 }
-.h-100 {
-  height: 100%;
+.vh-100 {
+  height: 100vh;
 }
+
 // display
 @each $var in (none, inline, inline-block, block, table, table-cell, teble-row, flex, inline-flex) {
   .d-#{$var} {
@@ -109,12 +228,34 @@ input {
 .flex-column {
   flex-direction: column;
 }
+.flex-column-reverse {
+  flex-direction: column-reverse;
+}
+.flex-row {
+  flex-direction: row;
+}
+.flex-row-reverse {
+  flex-direction: row-reverse;
+}
 .flex-wrap {
   flex-wrap: wrap;
+}
+.flex-wrap-reverse {
+  flex-wrap: wrap-reverse;
+}
+.flex-nowrap {
+  flex-wrap: nowrap;
 }
 .flex-1 {
   flex: 1;
 }
+// 次序
+@each $var in (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12) {
+  .order-#{$var} {
+    order: $var;
+  }
+}
+
 // flex 布局子元素水平轴对齐方式(eg: jc-ceneter)
 @each $key, $value in $flex-jc {
   .jc-#{$key} {
@@ -127,6 +268,14 @@ input {
     align-items: $value;
   }
 }
+
+// flex 布局子元素单独对齐方式(eg: as-center)
+@each $key, $value in $flex-as {
+  .as-#{$key} {
+    align-self: $value;
+  }
+}
+
 // flex-grow (eg: flex-grow-1)
 @each $size in (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12) {
   .flex-grow-#{$size} {
@@ -176,6 +325,7 @@ input {
     }
   }
 }
+
 // 补充边距
 .ml-auto {
   margin-left: auto;
@@ -183,13 +333,26 @@ input {
 .mr-auto {
   margin-right: auto;
 }
+.mb-auto {
+  margin-bottom: auto;
+}
+.mt-auto {
+  margin-top: auto;
+}
 
 // 边框(eg: bt-1)
 @each $dirKey, $dir in $directions {
   @each $sizeKey, $size in $border-sizes {
-    .b#{$dirKey}-#{$sizeKey} {
+    .border-#{$dir}-#{$sizeKey} {
       border-#{$dir}: $size solid $border-color;
     }
+  }
+}
+
+// 圆角
+@each $key, $value in $radius-sizes {
+  .border-radius-#{$key} {
+    border-radius: $value;
   }
 }
 
@@ -199,6 +362,22 @@ input {
     position: $value;
   }
 }
+
+// 补充定位
+.fixed-top {
+  position: fixed;
+  top: 0;
+}
+.fixed-bottom {
+  position: fixed;
+  bottom: 0;
+}
+.sticky-top {
+  position: sticky;
+  top: 0;
+}
+
+// 偏移
 @each $directionKey, $direction in $directions {
   @each $posKey, $pos in $pos-sizes {
     .#{$directionKey}-#{$posKey} {

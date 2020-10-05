@@ -26,7 +26,7 @@
       </el-menu>
     </el-aside>
     <el-container>
-      <el-header class="d-flex ai-center jc-between text-primary">
+      <el-header class="d-flex ai-center jc-between text-dark">
         <div class="d-flex ai-center">
           <span class="iconfont icon-outdent toggle fs-xl" @click="toggleCollapse"></span>
           <el-breadcrumb separator="/" class="ml-4">

@@ -1,6 +1,19 @@
 <template>
   <div class="dashboard">
-    主页
+    <div class="d-flex">
+      <div>
+        <div>
+          <span>图标</span>
+          <div class="text-center">
+            <span>803</span>
+            <p>在线人数</p>
+          </div>
+        </div>
+      </div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
   </div>
 </template>
 
