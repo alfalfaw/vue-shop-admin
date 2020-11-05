@@ -28,6 +28,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npm.taobao.org/' # 更换镜像源
       # - run: npm ci
       # 安装需要的依赖
       - run: npm i
