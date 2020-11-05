@@ -28,11 +28,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-          registry-url: 'https://registry.npm.taobao.org/' # 更换镜像源
-      # - run: npm ci
-      - run: npm get registry
-      - run: npm config set registry http://registry.npm.taobao.org
+          # 更换镜像源
+          # registry-url: 'https://registry.npm.taobao.org/'
       # 安装需要的依赖
+      # - run: npm ci
       - run: npm i
       # --if-present 如果命令存在则执行
       - run: npm run build --if-present
